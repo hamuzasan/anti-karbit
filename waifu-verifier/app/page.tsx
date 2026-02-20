@@ -330,9 +330,31 @@ export default function Home() {
                     </div>
                     
                     {/* UPDATE 5: Nama Website ganti jadi Anti Karbit */}
-                    <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-white uppercase italic drop-shadow-2xl leading-[0.85]">
-                      Anti<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600">K a r b i t</span>
-                    </h1>
+<div className="relative flex flex-col items-start gap-2">
+  {/* Container untuk Logo dan kata 'Anti' */}
+  <div className="flex items-center gap-4">
+    {/* Logo dari Supabase Bucket */}
+    <img 
+      src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/page-image/logo.png`}
+      alt="Logo"
+      className="w-12 h-12 md:w-20 md:h-20 object-contain drop-shadow-[0_0_15px_rgba(236,72,153,0.5)]"
+    />
+    
+    <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-white uppercase italic drop-shadow-2xl leading-none">
+      Anti
+    </h1>
+  </div>
+
+  {/* Kata 'Karbit' dengan Gradient yang lebih tajam */}
+  <h1 className="text-6xl md:text-8xl font-black tracking-tighter uppercase italic leading-[0.85]">
+    <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-600 drop-shadow-sm">
+      Karbit
+    </span>
+  </h1>
+
+  {/* Garis dekoratif kecil biar lebih estetik (Opsional) */}
+  <div className="h-1 w-24 bg-gradient-to-r from-pink-500 to-transparent mt-2 rounded-full"></div>
+</div>
                     
                     {/* UPDATE 5: Bahasa Indonesia */}
                     <p className="text-neutral-400 text-xs md:text-sm mt-6 max-w-lg leading-relaxed font-medium border-l-2 border-pink-500/50 pl-4">
