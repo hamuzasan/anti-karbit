@@ -115,7 +115,7 @@ export default function QuizPage({ params }: any) {
     }, 100); 
   };
 
-  // 4. SAVE PROGRESS (STRICT SESUAI SQL SCHEMAMU)
+  // 4. SAVE PROGRESS
   const saveProgress = async () => {
     if (hasSaved.current) return;
     hasSaved.current = true;
@@ -126,7 +126,6 @@ export default function QuizPage({ params }: any) {
 
       const userId = session.user.id;
 
-      // A. Simpan Soal Terjawab
       if (newCorrectIds.length > 0) {
         const answeredData = newCorrectIds.map(qId => ({
           user_id: userId,
@@ -139,7 +138,6 @@ export default function QuizPage({ params }: any) {
             .upsert(answeredData, { onConflict: 'user_id,question_id' });
       }
 
-      // B. Hitung Poin (Hanya kolom yang ada di SQL: quiz_points, collection_points, total_points_accumulated, level_cleared)
       const prevQuizPoints = userProgress?.quiz_points || 0;
       const prevCollectionPoints = userProgress?.collection_points || 0;
       const currentHighestLevel = userProgress?.level_cleared || 0;
@@ -147,7 +145,6 @@ export default function QuizPage({ params }: any) {
       const newQuizTotal = prevQuizPoints + pointsGained;
       const newLevel = Math.max(currentLevel, currentHighestLevel);
 
-      // C. Update Database (BUANG JAUH-JAUH UPDATED_AT)
       const { error: upsertError } = await supabase
         .from('user_progress')
         .upsert({
@@ -157,15 +154,12 @@ export default function QuizPage({ params }: any) {
           quiz_points: newQuizTotal,
           collection_points: prevCollectionPoints,
           total_points_accumulated: newQuizTotal + prevCollectionPoints
-          // TIDAK ADA UPDATED_AT DI SINI
         }, { 
           onConflict: 'user_id,waifu_id' 
         });
 
       if (upsertError) throw upsertError;
-
       console.log("✅ PROGRESS SAVED. Clean from hallucinations.");
-
     } catch (err) {
       console.error("❌ SAVE ERROR:", JSON.stringify(err, null, 2));
     }
@@ -189,59 +183,59 @@ export default function QuizPage({ params }: any) {
     else { statusText = "MISSION_COMPLETED"; statusColor = "text-slate-500"; }
     
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center p-6 font-sans">
+      <div className="h-[100dvh] w-full bg-[#050505] flex items-center justify-center p-6 font-sans overflow-hidden">
         <div className="max-w-md w-full flex flex-col items-center animate-in fade-in zoom-in duration-700">
           
           <div className="mb-10 text-center">
-             <div className="w-12 h-1 bg-pink-100 rounded-full mx-auto mb-4" />
-             <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.5em] mb-1">Session_Report</p>
-             <h1 className="text-xs font-black text-slate-400 uppercase tracking-widest italic">{waifu?.name}</h1>
+             <div className="w-12 h-1 bg-white/10 rounded-full mx-auto mb-4" />
+             <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] mb-1">Session_Report</p>
+             <h1 className="text-xs font-black text-white uppercase tracking-widest italic">{waifu?.name}</h1>
           </div>
 
           <div className="relative w-72 h-72 flex items-center justify-center mb-12">
-            <svg className="w-full h-full transform -rotate-90">
-              <circle cx="144" cy="144" r="120" stroke="currentColor" strokeWidth="6" fill="transparent" className="text-slate-50" />
+            <svg className="w-full h-full transform -rotate-90 drop-shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+              <circle cx="144" cy="144" r="120" stroke="currentColor" strokeWidth="6" fill="transparent" className="text-white/5" />
               <circle 
                 cx="144" cy="144" r="120" stroke="currentColor" strokeWidth="12" fill="transparent" 
                 strokeDasharray={754} 
                 strokeDashoffset={754 - (754 * percentage) / 100} 
                 className="transition-all duration-1000 ease-out" 
-                style={{ color: accentColor, strokeLinecap: 'round' }} 
+                style={{ color: accentColor, strokeLinecap: 'round', filter: `drop-shadow(0 0 10px ${accentColor})` }} 
               />
             </svg>
             <div className="absolute flex flex-col items-center">
-              <span className="text-7xl font-black text-slate-900 tracking-tighter">{percentage}%</span>
-              <span className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em] mt-1">Completion_Rate</span>
+              <span className="text-7xl font-black text-white tracking-tighter">{percentage}%</span>
+              <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] mt-1">Completion_Rate</span>
             </div>
           </div>
 
-          <div className="w-full bg-slate-50 rounded-[3rem] p-8 border border-white shadow-xl relative mb-8">
-            <div className="absolute -top-12 -right-4 w-28 h-28 drop-shadow-2xl">
-                <img src={waifu?.image_url?.[0]} className="w-full h-full object-contain rounded-2xl animate-bounce" />
+          <div className="w-full bg-black/60 backdrop-blur-md rounded-[3rem] p-8 border border-white/10 shadow-2xl relative mb-8">
+            <div className="absolute -top-12 -right-4 w-28 h-28 drop-shadow-2xl mix-blend-screen">
+                <img src={waifu?.image_url?.[0]} className="w-full h-full object-contain rounded-2xl animate-bounce opacity-80" />
             </div>
             
             <div className="space-y-1 mb-6">
-                <p className="text-[9px] font-black text-pink-400 uppercase tracking-widest">Points Acquired:</p>
-                <h3 className="text-3xl font-black text-slate-900 leading-tight">
-                    +{pointsGained} <span className="text-xs text-slate-400">PTS</span>
+                <p className="text-[9px] font-black uppercase tracking-widest" style={{ color: accentColor }}>Points Acquired:</p>
+                <h3 className="text-3xl font-black text-white leading-tight">
+                    +{pointsGained} <span className="text-xs text-slate-500">PTS</span>
                 </h3>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
-                    <p className="text-[8px] font-black text-slate-300 uppercase mb-1">Total_Benar</p>
-                    <p className="text-2xl font-black text-slate-800">{score}/{questions.length}</p>
+                <div className="bg-white/5 p-5 rounded-3xl border border-white/5 shadow-inner">
+                    <p className="text-[8px] font-black text-slate-400 uppercase mb-1">Total_Benar</p>
+                    <p className="text-2xl font-black text-white">{score}/{questions.length}</p>
                 </div>
-                <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
-                    <p className="text-[8px] font-black text-slate-300 uppercase mb-1">Quest_Status</p>
-                    <p className={`text-[10px] font-black uppercase ${statusColor}`}>
+                <div className="bg-white/5 p-5 rounded-3xl border border-white/5 shadow-inner">
+                    <p className="text-[8px] font-black text-slate-400 uppercase mb-1">Quest_Status</p>
+                    <p className={`text-[10px] font-black uppercase ${statusColor} drop-shadow-md`}>
                         {statusText}
                     </p>
                 </div>
             </div>
           </div>
 
-          <button onClick={() => router.push(`/waifu/${waifuId}`)} className="w-full py-6 bg-slate-900 text-white rounded-[2rem] font-black uppercase text-[10px] tracking-[0.4em] shadow-2xl hover:bg-pink-600 transition-all">
+          <button onClick={() => router.push(`/waifu/${waifuId}`)} className="w-full py-6 bg-white/5 border border-white/10 text-white rounded-[2rem] font-black uppercase text-[10px] tracking-[0.4em] shadow-2xl hover:bg-white/10 transition-all active:scale-95" style={{ textShadow: `0 0 10px ${accentColor}` }}>
             Next Quest ➜
           </button>
         </div>
@@ -249,28 +243,27 @@ export default function QuizPage({ params }: any) {
     );
   }
 
+  // --- QUIZ SCREEN CONTAINER (FULLSCREEN MODE) ---
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="max-w-2xl w-full h-[750px] shadow-2xl rounded-[3.5rem] overflow-hidden border-[10px] border-white bg-white relative">
-        {questions[currentStep] ? (
-          <QuizScreen 
-            waifu={waifu} 
-            question={questions[currentStep]} 
-            visual_assets={waifu?.visual_assets} 
-            timeLeft={timeLeft} 
-            timeElapsed={timeElapsed} 
-            accentColor={waifu?.theme_color} 
-            onAnswer={handleAnswer} 
-            currentIndex={currentStep} 
-            totalQuestions={questions.length} 
-          />
-        ) : (
-          <div className="h-full flex flex-col items-center justify-center bg-slate-50 gap-4">
-             <div className="w-10 h-10 border-4 border-slate-200 border-t-pink-500 rounded-full animate-spin"></div>
-             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Loading_Quest...</p>
-          </div>
-        )}
-      </div>
+    <div className="h-[100dvh] w-full bg-[#050505] relative overflow-hidden flex flex-col">
+      {questions[currentStep] ? (
+        <QuizScreen 
+          waifu={waifu} 
+          question={questions[currentStep]} 
+          visual_assets={waifu?.visual_assets} 
+          timeLeft={timeLeft} 
+          timeElapsed={timeElapsed} 
+          accentColor={waifu?.theme_color} 
+          onAnswer={handleAnswer} 
+          currentIndex={currentStep} 
+          totalQuestions={questions.length} 
+        />
+      ) : (
+        <div className="h-full flex flex-col items-center justify-center bg-[#050505] gap-4">
+           <div className="w-10 h-10 border-4 border-white/10 border-t-pink-500 rounded-full animate-spin"></div>
+           <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Loading_Memory...</p>
+        </div>
+      )}
     </div>
   );
 }
