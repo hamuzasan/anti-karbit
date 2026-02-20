@@ -330,30 +330,36 @@ export default function Home() {
                     </div>
                     
                     {/* UPDATE 5: Nama Website ganti jadi Anti Karbit */}
-<div className="relative flex flex-col items-start gap-2">
-  {/* Container untuk Logo dan kata 'Anti' */}
-  <div className="flex items-center gap-4">
-    {/* Logo dari Supabase Bucket */}
-    <img 
-      src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/page-image/logo.png`}
-      alt="Logo"
-      className="w-12 h-12 md:w-20 md:h-20 object-contain drop-shadow-[0_0_15px_rgba(236,72,153,0.5)]"
-    />
-    
-    <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-white uppercase italic drop-shadow-2xl leading-none">
+<div className="relative flex flex-row items-center justify-between gap-6 md:gap-10">
+  
+  {/* SISI KIRI: Teks Bertumpuk */}
+  <div className="flex flex-col items-start">
+    <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-white uppercase italic drop-shadow-2xl leading-[0.85]">
       Anti
     </h1>
+    <h1 className="text-6xl md:text-8xl font-black tracking-tighter uppercase italic leading-[0.85]">
+      <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-600 drop-shadow-sm">
+        Karbit
+      </span>
+    </h1>
+    {/* Garis dekoratif */}
+    <div className="h-1.5 w-24 bg-gradient-to-r from-pink-500 to-transparent mt-4 rounded-full"></div>
   </div>
 
-  {/* Kata 'Karbit' dengan Gradient yang lebih tajam */}
-  <h1 className="text-6xl md:text-8xl font-black tracking-tighter uppercase italic leading-[0.85]">
-    <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-600 drop-shadow-sm">
-      Karbit
-    </span>
-  </h1>
+  {/* SISI KANAN: Logo Besar */}
+  <div className="relative">
+    <img 
+      src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/page-image/logo2.png`}
+      alt="Logo"
+      // h-full atau manual height yang besar agar sejajar dengan dua baris teks
+      className="h-32 w-auto md:h-52 object-contain drop-shadow-[0_0_30px_rgba(236,72,153,0.3)] animate-pulse-subtle"
+      style={{ filter: 'drop-shadow(0 0 20px rgba(236,72,153,0.4))' }}
+    />
+    
+    {/* Efek cahaya di belakang logo agar lebih 'pop' */}
+    <div className="absolute inset-0 bg-pink-500/20 blur-[60px] -z-10 rounded-full"></div>
+  </div>
 
-  {/* Garis dekoratif kecil biar lebih estetik (Opsional) */}
-  <div className="h-1 w-24 bg-gradient-to-r from-pink-500 to-transparent mt-2 rounded-full"></div>
 </div>
                     
                     {/* UPDATE 5: Bahasa Indonesia */}
