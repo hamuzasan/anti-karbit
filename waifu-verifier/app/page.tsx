@@ -351,7 +351,7 @@ export default function Home() {
     <img 
       src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/page-image/logo2.png`}
       alt="Logo"
-      className="h-32 w-auto md:h-52 object-contain drop-shadow-[0_0_30px_rgba(236,72,153,0.3)] animate-pulse-subtle"
+      className="h-36 w-auto md:h-56 object-contain drop-shadow-[0_0_30px_rgba(236,72,153,0.3)] animate-pulse-subtle"
       style={{ filter: 'drop-shadow(0 0 20px rgba(236,72,153,0.4))' }}
     />
     
