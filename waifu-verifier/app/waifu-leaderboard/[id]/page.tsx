@@ -190,61 +190,36 @@ export default function WaifuDetailLeaderboard() {
       const { count: totalQuestions } = await supabase.from('questions').select('*', { count: 'exact', head: true }).eq('waifu_id', id);
       const totalQ = totalQuestions || 1;
 
-      // 3. Get Points (Note: Added 'name' to select)
-      const { data: quizData } = await supabase
+      // 3. Get Points (Meniru logika dari LeaderboardPage: Langsung diurutkan dan di-limit oleh Supabase)
+      const { data: progressData } = await supabase
         .from('user_progress')
         .select(`total_points_accumulated, user_id, profiles!inner ( username, name, avatar_url, role )`)
-        .eq('waifu_id', id);
-
-      const { data: merchData } = await supabase
-        .from('user_collections')
-        .select('user_id, points_awarded')
         .eq('waifu_id', id)
-        .eq('is_valid', true);
+        .order('total_points_accumulated', { ascending: false })
+        .limit(100);
 
-      if (quizData) {
-        const userMap = new Map<string, any>();
-
-        quizData.forEach((q: any) => {
-           userMap.set(q.user_id, {
-              user_id: q.user_id,
-              quiz_points: q.total_points_accumulated || 0,
-              merch_points: 0, 
-              total_points: q.total_points_accumulated || 0,
-              profile: q.profiles
-           });
-        });
-
-        if (merchData) {
-           merchData.forEach((m: any) => {
-              if (userMap.has(m.user_id)) {
-                 const userData = userMap.get(m.user_id);
-                 userData.merch_points += (m.points_awarded || 0);
-                 userData.total_points += (m.points_awarded || 0);
-                 userMap.set(m.user_id, userData);
-              }
-           });
-        }
-
-        const combinedChallengers = Array.from(userMap.values());
-        combinedChallengers.sort((a, b) => b.total_points - a.total_points);
-        const top100 = combinedChallengers.slice(0, 100);
-
-        const challengersWithStats = await Promise.all(top100.map(async (p: any, index: number) => {
+      if (progressData) {
+        const challengersWithStats = await Promise.all(progressData.map(async (p: any, index: number) => {
            const rank = index + 1;
            const { count: answeredCount } = await supabase.from('answered_questions').select('*', { count: 'exact', head: true }).eq('waifu_id', id).eq('user_id', p.user_id);
            const answered = answeredCount || 0;
            const completionRate = (answered / totalQ) * 100;
            
            const rankData = getRankData(rank, wData?.name || "", completionRate, wData?.theme_color || '#ec4899');
+           
+           // Mencegah error jika tipe balikan berupa Array
+           const profileObj = Array.isArray(p.profiles) ? p.profiles[0] : p.profiles;
 
            return {
-             ...p,
+             user_id: p.user_id,
+             total_points: p.total_points_accumulated || 0,
+             quiz_points: p.total_points_accumulated || 0, // Fallback ke total
+             merch_points: 0, // Dikosongkan karena tidak perlu looping dan query ke user_collections manual
              profile: {
-                username: p.profile.username,
-                name: p.profile.name, // Mapping Name
-                avatar_url: p.profile.avatar_url,
-                role: p.profile.role
+                username: profileObj?.username || "Mystery Simp",
+                name: profileObj?.name,
+                avatar_url: profileObj?.avatar_url,
+                role: profileObj?.role
              },
              rank: rank,
              rankTitleData: rankData,
@@ -339,7 +314,7 @@ export default function WaifuDetailLeaderboard() {
                 Challenger Zone
             </h2>
             <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-white/5 px-3 py-1 rounded-full border border-white/5">
-               Top 100
+                Top 100
             </span>
          </div>
 
