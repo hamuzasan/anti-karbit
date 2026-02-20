@@ -330,10 +330,10 @@ export default function Home() {
                     </div>
                     
                     {/* UPDATE 5: Nama Website ganti jadi Anti Karbit */}
-<div className="relative flex flex-row items-center justify-between gap-6 md:gap-10">
+<div className="relative flex flex-row items-center justify-start gap-8 md:gap-12">
   
   {/* SISI KIRI: Teks Bertumpuk */}
-  <div className="flex flex-col items-start">
+  <div className="flex flex-col items-start shrink-0">
     <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-white uppercase italic drop-shadow-2xl leading-[0.85]">
       Anti
     </h1>
@@ -346,17 +346,16 @@ export default function Home() {
     <div className="h-1.5 w-24 bg-gradient-to-r from-pink-500 to-transparent mt-4 rounded-full"></div>
   </div>
 
-  {/* SISI KANAN: Logo Besar */}
-  <div className="relative">
+  {/* SISI KANAN: Logo Besar (Sekarang nempel di samping teks) */}
+  <div className="relative flex-shrink-0">
     <img 
       src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/page-image/logo2.png`}
       alt="Logo"
-      // h-full atau manual height yang besar agar sejajar dengan dua baris teks
       className="h-32 w-auto md:h-52 object-contain drop-shadow-[0_0_30px_rgba(236,72,153,0.3)] animate-pulse-subtle"
       style={{ filter: 'drop-shadow(0 0 20px rgba(236,72,153,0.4))' }}
     />
     
-    {/* Efek cahaya di belakang logo agar lebih 'pop' */}
+    {/* Efek cahaya di belakang logo */}
     <div className="absolute inset-0 bg-pink-500/20 blur-[60px] -z-10 rounded-full"></div>
   </div>
 
