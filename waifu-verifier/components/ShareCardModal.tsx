@@ -93,7 +93,7 @@ export default function ShareCardModal({ isOpen, onClose, user, waifu, progress,
     }
   };
 
-  // --- 3. FUNGSI SHARE FACEBOOK (BARU) ---
+  // --- 3. FUNGSI SHARE FACEBOOK (DIPERBAIKI) ---
   const handleShareFB = async () => {
     if (!cardRef.current || !isReady) return;
     setIsSharingFB(true);
@@ -112,7 +112,7 @@ export default function ShareCardModal({ isOpen, onClose, user, waifu, progress,
       // 2. Ubah base64 dataUrl menjadi File Blob
       const blob = await (await fetch(dataUrl)).blob();
 
-      // 3. Generate nama unik & Upload ke Supabase (Bucket 'share-cards' harus public)
+      // 3. Generate nama unik & Upload ke Supabase
       const uniqueId = `card_${Date.now()}_${Math.random().toString(36).substring(7)}`;
       const fileName = `${uniqueId}.png`;
 
@@ -122,9 +122,15 @@ export default function ShareCardModal({ isOpen, onClose, user, waifu, progress,
 
       if (error) throw error;
 
-      // 4. Buka Dialog Share Facebook
-      const domain = window.location.origin; 
-      const shareUrl = `${domain}/share/${uniqueId}`;
+      // 4. DAPATKAN PUBLIC URL DARI GAMBAR YANG BARU DIUPLOAD
+      // Ini kunci agar Facebook bisa menampilkan preview gambar kartunya
+      const { data: publicUrlData } = supabase.storage
+        .from('share-cards')
+        .getPublicUrl(fileName);
+        
+      const shareUrl = publicUrlData.publicUrl;
+
+      // 5. Buka Dialog Share Facebook dengan link gambar tersebut
       const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
       
       window.open(fbShareUrl, 'facebook-share-dialog', 'width=600,height=400');
@@ -298,7 +304,7 @@ export default function ShareCardModal({ isOpen, onClose, user, waifu, progress,
             </button>
         </div>
 
-        {/* --- TOMBOL AKSI (DIUBAH DI SINI) --- */}
+        {/* --- TOMBOL AKSI --- */}
         <div className="mt-4 flex gap-2 md:gap-3 w-full">
             <button onClick={onClose} className="flex-[0.8] py-4 bg-neutral-800 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-neutral-700 transition-colors">
                 Tutup

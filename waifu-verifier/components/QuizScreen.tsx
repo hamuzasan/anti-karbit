@@ -123,12 +123,14 @@ export default function QuizScreen({
         {/* VN Dialogue Box (Teks Soal) */}
         <div className="relative w-full bg-black/70 backdrop-blur-md border border-white/10 rounded-xl p-5 pt-7 mb-6 shadow-[0_0_30px_rgba(0,0,0,0.8)]">
           {/* Speaker Name Tag */}
-          <div 
-            className="absolute -top-3.5 left-4 px-4 py-1 text-[10px] font-black text-white uppercase tracking-widest skew-x-[-12deg] shadow-lg"
-            style={{ backgroundColor: accentColor }}
-          >
-            <span className="block skew-x-[12deg]">{waifu?.name || 'SYSTEM'}</span>
-          </div>
+<div 
+  className="absolute -top-2 left-4 px-4 py-1.5 text-[10px] leading-none font-black text-white uppercase tracking-widest skew-x-[-12deg] shadow-lg"
+  style={{ backgroundColor: accentColor }}
+>
+  <span className="block skew-x-[12deg] leading-none">
+    {waifu?.name || 'SYSTEM'}
+  </span>
+</div>
 
           <p className="text-sm md:text-base font-medium text-slate-200 leading-relaxed italic">
             "{question?.question_text}"
